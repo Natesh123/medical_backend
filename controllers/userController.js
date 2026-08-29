@@ -338,3 +338,34 @@ exports.deleteUser = asyncErrorHandler(async (req, res, next) => {
     await user.remove();
     res.status(200).json({ success: true });
 });
+
+// ===== ADD ADDRESS =====
+exports.addAddress = asyncErrorHandler(async (req, res, next) => {
+    const user = await User.findById(req.user.id);
+    
+    // If it's the first address or set as default, we could handle isDefault here
+    // For now just add it to the array
+    user.addresses.push(req.body);
+    await user.save();
+
+    res.status(200).json({
+        success: true,
+        addresses: user.addresses
+    });
+});
+
+// ===== DELETE ADDRESS =====
+exports.deleteAddress = asyncErrorHandler(async (req, res, next) => {
+    const user = await User.findById(req.user.id);
+
+    user.addresses = user.addresses.filter(
+        (addr) => addr._id.toString() !== req.params.id.toString()
+    );
+
+    await user.save();
+
+    res.status(200).json({
+        success: true,
+        addresses: user.addresses
+    });
+});

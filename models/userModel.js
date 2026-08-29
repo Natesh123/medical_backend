@@ -25,6 +25,17 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, "Please Enter Your Address"],
     },
+    addresses: [
+        {
+            address: { type: String, required: true },
+            city: { type: String, required: true },
+            state: { type: String, required: true },
+            country: { type: String, required: true },
+            pincode: { type: String, required: true },
+            phoneNo: { type: String, required: true },
+            isDefault: { type: Boolean, default: false }
+        }
+    ],
     password: {
         type: String,
         required: [true, "Please Enter Your Password"],

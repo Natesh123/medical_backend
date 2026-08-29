@@ -1,5 +1,5 @@
 const express = require('express');
-const { registerUser, loginUser, logoutUser, getUserDetails, forgotPassword, resetPassword, updatePassword, updateProfile, getAllUsers, getSingleUser, updateUserRole, deleteUser } = require('../controllers/userController');
+const { registerUser, loginUser, logoutUser, getUserDetails, forgotPassword, resetPassword, updatePassword, updateProfile, getAllUsers, getSingleUser, updateUserRole, deleteUser, addAddress, deleteAddress } = require('../controllers/userController');
 const { isAuthenticatedUser, authorizeRoles } = require('../middlewares/auth');
 
 const router = express.Router();
@@ -16,6 +16,10 @@ router.route('/password/reset/:token').put(resetPassword);
 router.route('/password/update').put(isAuthenticatedUser, updatePassword);
 
 router.route('/me/update').put(isAuthenticatedUser, updateProfile);
+
+// Address Routes
+router.route('/addresses').post(isAuthenticatedUser, addAddress);
+router.route('/addresses/:id').delete(isAuthenticatedUser, deleteAddress);
 
 router.route("/admin/users").get(isAuthenticatedUser, authorizeRoles("admin"), getAllUsers);
 

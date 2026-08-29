@@ -5,7 +5,14 @@ const asyncErrorHandler = require('./asyncErrorHandler');
 
 exports.isAuthenticatedUser = asyncErrorHandler(async (req, res, next) => {
 
-    const { token } = req.cookies;
+    const role = req.headers['x-role'];
+    let token = req.cookies.token;
+
+
+    // Prioritize adminToken if header is admin, else use standard token
+    if (role === 'admin') {
+        token = req.cookies.adminToken;
+    }
 
     if (!token) {
         return next(new ErrorHandler("Please Login to Access", 401))
@@ -13,6 +20,7 @@ exports.isAuthenticatedUser = asyncErrorHandler(async (req, res, next) => {
 
     const decodedData = jwt.verify(token, process.env.JWT_SECRET || "FLIPKART");
     req.user = await User.findById(decodedData.id);
+
     next();
 });
 

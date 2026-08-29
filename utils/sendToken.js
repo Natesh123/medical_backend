@@ -16,7 +16,10 @@ const sendToken = async (user, statusCode, res) => {
         userData.permissions = [];
     }
 
-    res.status(statusCode).cookie('token', token, options).json({
+    const roleHeader = res.req && res.req.headers ? res.req.headers['x-role'] : null;
+    const cookieName = roleHeader === 'admin' ? 'adminToken' : 'token';
+
+    res.status(statusCode).cookie(cookieName, token, options).json({
         success: true,
         user: userData,
         token,

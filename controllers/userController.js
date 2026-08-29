@@ -110,12 +110,27 @@ exports.loginUser = asyncErrorHandler(async (req, res, next) => {
         return next(new ErrorHandler("Invalid Email or Password", 401));
     }
 
+    const loginPortal = req.headers['x-role'];
+
+    // Prevent Admin from logging into User Portal
+    if (loginPortal === 'user' && user.role === 'admin') {
+        return next(new ErrorHandler("Admins cannot login through the User portal. Please use the Admin login page.", 403));
+    }
+
+    // Prevent Normal Users from logging into Admin Portal
+    if (loginPortal === 'admin' && user.role !== 'admin') {
+        return next(new ErrorHandler("Access Denied! Only administrators can login through this portal.", 403));
+    }
+
     sendToken(user, 200, res);
-}); 
+});
 
 // ===== LOGOUT USER =====
 exports.logoutUser = asyncErrorHandler(async (req, res, next) => {
-    res.cookie("token", null, {
+    const role = req.headers['x-role'];
+    const cookieName = role === 'admin' ? 'adminToken' : 'token';
+
+    res.cookie(cookieName, null, {
         expires: new Date(Date.now()),
         httpOnly: true,
     });
